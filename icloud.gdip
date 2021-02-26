@@ -1,0 +1,16 @@
+[config]
+name="iCloud"
+binary="icloud.a"
+
+initialization="register_icloud_types"
+deinitialization="unregister_icloud_types"
+
+[dependencies]
+linked=[]
+embedded=[]
+system=["Foundation.framework"]
+capabilities=[]
+files=[]
+
+[plist]
+

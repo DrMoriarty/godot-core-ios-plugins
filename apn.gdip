@@ -1,0 +1,16 @@
+[config]
+name="APN"
+binary="apn.a"
+
+initialization="godot_apn_init"
+deinitialization="godot_apn_deinit"
+
+[dependencies]
+linked=[]
+embedded=[]
+system=["Foundation.framework"]
+capabilities=[]
+files=[]
+
+[plist]
+

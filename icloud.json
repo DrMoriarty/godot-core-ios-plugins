@@ -1,0 +1,21 @@
+{
+  "name": "core.icloud",
+  "display_name": "iCloud",
+  "description": "Apple iCloud plugin",
+  "version": "3.2.4-rc3",
+  "license": "MIT",
+  "url": "https://github.com/godotengine/godot-ios-plugins",
+  "category": "misc",
+  "godot_version": "3.2.4",
+  "author": {
+    "name": "Godot core team",
+    "url": "https://godotengine.org"
+  },
+  "platform_ios": {
+    "files": {
+      "bin/icloud.release.a": "ios/plugins/core.icloud/",
+      "bin/icloud.debug.a": "ios/plugins/core.icloud/",
+      "icloud.gdip": "ios/plugins/core.icloud/"
+    }
+  }
+}

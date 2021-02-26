@@ -1,0 +1,21 @@
+{
+  "name": "core.camera",
+  "display_name": "Camera",
+  "description": "iPhone camera",
+  "version": "3.2.4-rc3",
+  "license": "MIT",
+  "url": "https://github.com/godotengine/godot-ios-plugins",
+  "category": "misc",
+  "godot_version": "3.2.4",
+  "author": {
+    "name": "Godot core team",
+    "url": "https://godotengine.org"
+  },
+  "platform_ios": {
+    "files": {
+      "bin/camera.release.a": "ios/plugins/core.camera/",
+      "bin/camera.debug.a": "ios/plugins/core.camera/",
+      "camera.gdip": "ios/plugins/core.camera/"
+    }
+  }
+}

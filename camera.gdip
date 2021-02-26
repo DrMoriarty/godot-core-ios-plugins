@@ -1,0 +1,16 @@
+[config]
+name="Camera"
+binary="camera.a"
+
+initialization="register_camera_types"
+deinitialization="unregister_camera_types"
+
+[dependencies]
+linked=[]
+embedded=[]
+system=["Foundation.framework"]
+capabilities=[]
+files=[]
+
+[plist]
+

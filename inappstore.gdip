@@ -1,0 +1,15 @@
+[config]
+name="AppStore"
+binary="inappstore.a"
+
+initialization="register_inappstore_types"
+deinitialization="unregister_inappstore_types"
+
+[dependencies]
+linked=[]
+embedded=[]
+system=["Foundation.framework"]
+capabilities=[]
+files=[]
+
+[plist]
