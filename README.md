@@ -1,3 +1,7 @@
+# This repository is mirror of https://github.com/godotengine/godot-ios-plugins/
+It contains files for releasing binary plugins to [NativeLib](https://github.com/DrMoriarty/nativelib) repository.
+You can install precompiled plugins with help of [NativeLib-UI Addon](http://godotengine.org/asset-library/asset/824)
+
 # Godot iOS plugins
 
 `master` branch is current development branch and can introduce breaking changes to plugin's public interface. 
