@@ -13,8 +13,8 @@
   },
   "platform_ios": {
     "files": {
-      "bin/camera.release.a": "ios/plugins/core.camera/",
-      "bin/camera.debug.a": "ios/plugins/core.camera/",
+      "bin/release/camera/camera.release.a": "ios/plugins/core.camera/",
+      "bin/release/camera/camera.debug.a": "ios/plugins/core.camera/",
       "camera.gdip": "ios/plugins/core.camera/"
     }
   }

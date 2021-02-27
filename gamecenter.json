@@ -13,8 +13,8 @@
   },
   "platform_ios": {
     "files": {
-      "bin/gamecenter.release.a": "ios/plugins/core.gamecenter/",
-      "bin/gamecenter.debug.a": "ios/plugins/core.gamecenter/",
+      "bin/release/gamecenter/gamecenter.release.a": "ios/plugins/core.gamecenter/",
+      "bin/release/gamecenter/gamecenter.debug.a": "ios/plugins/core.gamecenter/",
       "gamecenter.gdip": "ios/plugins/core.gamecenter/"
     }
   }

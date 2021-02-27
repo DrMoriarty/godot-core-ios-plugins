@@ -13,8 +13,8 @@
   },
   "platform_ios": {
     "files": {
-      "bin/icloud.release.a": "ios/plugins/core.icloud/",
-      "bin/icloud.debug.a": "ios/plugins/core.icloud/",
+      "bin/release/icloud/icloud.release.a": "ios/plugins/core.icloud/",
+      "bin/release/icloud/icloud.debug.a": "ios/plugins/core.icloud/",
       "icloud.gdip": "ios/plugins/core.icloud/"
     }
   }

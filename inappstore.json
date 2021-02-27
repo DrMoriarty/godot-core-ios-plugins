@@ -13,8 +13,8 @@
   },
   "platform_ios": {
     "files": {
-      "bin/inappstore.release.a": "ios/plugins/core.inappstore/",
-      "bin/inappstore.debug.a": "ios/plugins/core.inappstore/",
+      "bin/release/inappstore/inappstore.release.a": "ios/plugins/core.inappstore/",
+      "bin/release/inappstore/inappstore.debug.a": "ios/plugins/core.inappstore/",
       "inappstore.gdip": "ios/plugins/core.inappstore/"
     }
   }

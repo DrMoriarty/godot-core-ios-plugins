@@ -13,8 +13,8 @@
   },
   "platform_ios": {
     "files": {
-      "bin/arkit.release.a": "ios/plugins/core.arkit/",
-      "bin/arkit.debug.a": "ios/plugins/core.arkit/",
+      "bin/release/arkit/arkit.release.a": "ios/plugins/core.arkit/",
+      "bin/release/arkit/arkit.debug.a": "ios/plugins/core.arkit/",
       "arkit.gdip": "ios/plugins/core.arkit/"
     }
   }

@@ -13,8 +13,8 @@
   },
   "platform_ios": {
     "files": {
-      "bin/apn.release.a": "ios/plugins/core.apn/",
-      "bin/apn.debug.a": "ios/plugins/core.apn/",
+      "bin/release/apn/apn.release.a": "ios/plugins/core.apn/",
+      "bin/release/apn/apn.debug.a": "ios/plugins/core.apn/",
       "apn.gdip": "ios/plugins/core.apn/"
     }
   }
