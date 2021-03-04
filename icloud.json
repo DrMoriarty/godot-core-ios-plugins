@@ -13,9 +13,9 @@
   },
   "platform_ios": {
     "files": {
-      "bin/release/icloud/icloud.release.a": "ios/plugins/core.icloud/",
-      "bin/release/icloud/icloud.debug.a": "ios/plugins/core.icloud/",
-      "icloud.gdip": "ios/plugins/core.icloud/"
+      "bin/release/icloud/icloud.debug.xcframework": "ios/plugins/core.icloud/icloud.debug.xcframework",
+      "bin/release/icloud/icloud.release.xcframework": "ios/plugins/core.icloud/icloud.release.xcframework",
+      "bin/release/icloud/icloud.gdip": "ios/plugins/core.icloud/"
     }
   }
 }

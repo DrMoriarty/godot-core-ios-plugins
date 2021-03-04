@@ -13,9 +13,9 @@
   },
   "platform_ios": {
     "files": {
-      "bin/release/gamecenter/gamecenter.release.a": "ios/plugins/core.gamecenter/",
-      "bin/release/gamecenter/gamecenter.debug.a": "ios/plugins/core.gamecenter/",
-      "gamecenter.gdip": "ios/plugins/core.gamecenter/"
+      "bin/release/gamecenter/gamecenter.debug.xcframework": "ios/plugins/core.gamecenter/gamecenter.debug.xcframework",
+      "bin/release/gamecenter/gamecenter.release.xcframework": "ios/plugins/core.gamecenter/gamecenter.release.xcframework",
+      "bin/release/gamecenter/gamecenter.gdip": "ios/plugins/core.gamecenter/"
     }
   }
 }

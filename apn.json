@@ -13,9 +13,9 @@
   },
   "platform_ios": {
     "files": {
-      "bin/release/apn/apn.release.a": "ios/plugins/core.apn/",
-      "bin/release/apn/apn.debug.a": "ios/plugins/core.apn/",
-      "apn.gdip": "ios/plugins/core.apn/"
+      "bin/release/apn/apn.debug.xcframework": "ios/plugins/core.apn/apn.debug.xcframework",
+      "bin/release/apn/apn.release.xcframework": "ios/plugins/core.apn/apn.release.xcframework",
+      "bin/release/apn/apn.gdip": "ios/plugins/core.apn/"
     }
   }
 }
