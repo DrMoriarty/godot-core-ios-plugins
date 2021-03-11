@@ -2,7 +2,7 @@
   "name": "core.arkit",
   "display_name": "ARKit",
   "description": "Apple Augmented Reality Kit",
-  "version": "3.2.4-rc3",
+  "version": "3.2.4-rc4",
   "license": "MIT",
   "url": "https://github.com/godotengine/godot-ios-plugins",
   "category": "misc",
