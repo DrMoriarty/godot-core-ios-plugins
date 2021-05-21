@@ -1,0 +1,16 @@
+[general]
+
+singleton=true
+load_once=true
+symbol_prefix="gamecenter_"
+reloadable=false
+
+[entry]
+
+OSX.32="res://addons/gamecenter-osx/libgamecenter.dylib"
+OSX.64="res://addons/gamecenter-osx/libgamecenter.dylib"
+
+[dependencies]
+
+OSX.32=[]
+OSX.64=[]
