@@ -1,5 +1,13 @@
 #!python
-import os, subprocess
+import os, sys, subprocess
+
+if sys.version_info < (3,):
+    def decode_utf8(x):
+        return x
+else:
+    import codecs
+    def decode_utf8(x):
+        return codecs.utf_8_decode(x)[0]
 
 opts = Variables([], ARGUMENTS)
 
@@ -10,13 +18,14 @@ env = DefaultEnvironment()
 opts.Add(EnumVariable('target', "Compilation target", 'debug', ['d', 'debug', 'r', 'release']))
 opts.Add(EnumVariable('platform', "Compilation platform", '', ['', 'windows', 'x11', 'linux', 'osx']))
 opts.Add(EnumVariable('p', "Compilation target, alias for 'platform'", '', ['', 'windows', 'x11', 'linux', 'osx']))
+opts.Add(EnumVariable('arch', "Compilation architecture", 'universal', ['universal', 'x86_64', 'arm64']))
 opts.Add(BoolVariable('use_llvm', "Use the LLVM / Clang compiler", 'no'))
 opts.Add(PathVariable('target_path', 'The path where the lib is installed.', 'bin/'))
 opts.Add(PathVariable('target_name', 'The library name.', '', PathVariable.PathAccept))
 opts.Add(EnumVariable('plugin', 'Plugin to build', '', ['', 'gamecenter']))
 
 # Local dependency paths, adapt them to your setup
-godot_headers_path = "godot-cpp/godot_headers/"
+godot_headers_path = "godot-cpp/godot-headers/"
 cpp_bindings_path = "godot-cpp/"
 cpp_library = "libgodot-cpp"
 
@@ -50,12 +59,19 @@ if env['platform'] == "osx":
     env['target_path'] += 'osx/'
     cpp_library += '.osx'
     if env['target'] in ('debug', 'd'):
-        env.Append(CCFLAGS = ['-g','-O2', '-arch', 'x86_64', '-std=c++17'])
-        env.Append(LINKFLAGS = ['-arch', 'x86_64'])
+        env.Append(CCFLAGS = ['-g','-O2', '-std=c++17'])
     else:
-        env.Append(CCFLAGS = ['-g','-O3', '-arch', 'x86_64', '-std=c++17'])
-        env.Append(LINKFLAGS = ['-arch', 'x86_64'])
-    env.Append(LINKFLAGS = ['-framework', 'GameKit'])
+        env.Append(CCFLAGS = ['-g','-O3', '-std=c++17'])
+    if env['arch'] == 'universal':
+        env.Append(CCFLAGS = ['-arch', 'x86_64', '-arch', 'arm64'])
+        env.Append(LINKFLAGS = ['-arch', 'x86_64', '-arch', 'arm64'])
+    else:
+        env.Append(CCFLAGS = ['-arch', env['arch']])
+        env.Append(LINKFLAGS = ['-arch', env['arch']])
+    env.Append(LINKFLAGS = ['-framework', 'GameKit', '-framework', 'Cocoa'])
+    sdk_path = decode_utf8(subprocess.check_output(["xcrun", "--sdk", "macosx", "--show-sdk-path"]).strip())
+    env.Append(CCFLAGS=["-isysroot", sdk_path])
+    env.Append(LINKFLAGS=["-isysroot", sdk_path])
 
 elif env['platform'] in ('x11', 'linux'):
     env['target_path'] += 'x11/'
@@ -83,7 +99,7 @@ if env['target'] in ('debug', 'd'):
 else:
     cpp_library += '.release'
 
-cpp_library += '.' + str(bits)
+cpp_library += '.' + env['arch']
 
 # make sure our binding library is properly includes
 env.Append(CPPPATH=['.', godot_headers_path, cpp_bindings_path + 'include/', cpp_bindings_path + 'include/core/', cpp_bindings_path + 'include/gen/'])
@@ -96,7 +112,7 @@ sources = Glob(env['plugin'] + '/*.cpp')
 sources.append(Glob(env['plugin'] + '/*.mm'))
 sources.append(Glob(env['plugin'] + '/*.m'))
 
-library = env.SharedLibrary(target=env['target_path'] + env['target_name'] , source=sources)
+library = env.SharedLibrary(target=env['target_path'] + env['target_name'] + '_' + env['arch'], source=sources)
 
 Default(library)
 

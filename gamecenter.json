@@ -2,7 +2,7 @@
   "name": "core.gamecenter",
   "display_name": "GameCenter",
   "description": "Apple GameCenter plugin",
-  "version": "3.3.0.1",
+  "version": "3.3.0.2",
   "license": "MIT",
   "url": "https://github.com/godotengine/godot-ios-plugins",
   "category": "misc",
@@ -20,7 +20,7 @@
   },
   "platform_osx": {
     "files": {
-      "plugins-osx/bin/osx/libgamecenter.dylib": "addons/gamecenter-osx/",
+      "plugins-osx/bin/osx/libgamecenter_universal.dylib": "addons/gamecenter-osx/",
       "plugins-osx/gamecenter/gamecenter.gdnlib": "addons/gamecenter-osx/",
       "plugins-osx/gamecenter/gamecenter.gdns": "addons/gamecenter-osx/"
     }

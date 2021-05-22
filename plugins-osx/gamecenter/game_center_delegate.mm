@@ -39,7 +39,7 @@
 	if (GameCenter::get_singleton()) {
 		GameCenter::get_singleton()->game_center_closed();
 	}
-	[gameCenterViewController dismissViewControllerAnimated:YES completion:nil];
+	[gameCenterViewController dismissController:nil];
 }
 
 @end
