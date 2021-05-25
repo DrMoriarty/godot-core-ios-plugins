@@ -39,7 +39,8 @@
 	if (GameCenter::get_singleton()) {
 		GameCenter::get_singleton()->game_center_closed();
 	}
-	[gameCenterViewController dismissController:nil];
+	//[gameCenterViewController dismissController:nil];
+	[GKDialogController.sharedDialogController dismiss:self];
 }
 
 @end

@@ -2,7 +2,7 @@
   "name": "core.gamecenter",
   "display_name": "GameCenter",
   "description": "Apple GameCenter plugin",
-  "version": "3.3.0.2",
+  "version": "3.3.0.3",
   "license": "MIT",
   "url": "https://github.com/godotengine/godot-ios-plugins",
   "category": "misc",

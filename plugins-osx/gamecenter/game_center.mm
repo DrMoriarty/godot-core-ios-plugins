@@ -75,24 +75,24 @@ godot_error GameCenter::authenticate() {
 	GKLocalPlayer *player = [GKLocalPlayer localPlayer];
 	ERR_FAIL_COND_V(![player respondsToSelector:@selector(authenticateHandler)], GODOT_ERR_UNAVAILABLE);
 
-    GKDialogController *dialog = [[GKDialogController alloc] init];
+	GKDialogController *dialog = [[GKDialogController alloc] init];
 	ERR_FAIL_COND_V(!dialog, GODOT_FAILED);
 
 	// This handler is called several times.  First when the view needs to be shown, then again
-	// after the view is cancelled or the user logs in.  Or if the user's already logged in, it's
+	// after the view is cancelled or the user logs in.	 Or if the user's already logged in, it's
 	// called just once to confirm they're authenticated.  This is why no result needs to be specified
 	// in the presentViewController phase. In this case, more calls to this function will follow.
 	player.authenticateHandler = (^(NSViewController *controller, NSError *error) {
 
 		if (controller) {
-            [dialog presentViewController:controller];
+			[dialog presentViewController:controller];
 		} else {
 			Dictionary ret;
 			ret["type"] = "authentication";
 			if (player.isAuthenticated) {
 				ret["result"] = "ok";
 
-                ret["player_id"] = [player.teamPlayerID UTF8String];
+				ret["player_id"] = [player.teamPlayerID UTF8String];
 
 				GameCenter::get_singleton()->authenticated = true;
 			} else {
@@ -297,8 +297,9 @@ godot_error GameCenter::show_game_center(Dictionary p_params) {
 	GKGameCenterViewController *controller = [[GKGameCenterViewController alloc] init];
 	ERR_FAIL_COND_V(!controller, GODOT_FAILED);
 
-    GKDialogController *dialog = [[GKDialogController alloc] init];
+	GKDialogController *dialog = [GKDialogController sharedDialogController]; // [[GKDialogController alloc] init];
 	ERR_FAIL_COND_V(!dialog, GODOT_FAILED);
+	dialog.parentWindow = NSApplication.sharedApplication.mainWindow;
 
 	controller.gameCenterDelegate = gameCenterDelegate;
 	controller.viewState = view_state;
@@ -311,7 +312,7 @@ godot_error GameCenter::show_game_center(Dictionary p_params) {
 		}
 	}
 
-    [dialog presentViewController:controller];
+	[dialog presentViewController:controller];
 
 	return GODOT_OK;
 };
@@ -329,7 +330,7 @@ godot_error GameCenter::request_identity_verification_signature() {
 			ret["signature"] = [[signature base64EncodedStringWithOptions:0] UTF8String];
 			ret["salt"] = [[salt base64EncodedStringWithOptions:0] UTF8String];
 			ret["timestamp"] = timestamp;
-            ret["player_id"] = [player.teamPlayerID UTF8String];
+			ret["player_id"] = [player.teamPlayerID UTF8String];
 		} else {
 			ret["result"] = "error";
 			ret["error_code"] = (int64_t)error.code;
