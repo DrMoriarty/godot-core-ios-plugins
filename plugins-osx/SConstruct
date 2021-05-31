@@ -22,7 +22,7 @@ opts.Add(EnumVariable('arch', "Compilation architecture", 'universal', ['univers
 opts.Add(BoolVariable('use_llvm', "Use the LLVM / Clang compiler", 'no'))
 opts.Add(PathVariable('target_path', 'The path where the lib is installed.', 'bin/'))
 opts.Add(PathVariable('target_name', 'The library name.', '', PathVariable.PathAccept))
-opts.Add(EnumVariable('plugin', 'Plugin to build', '', ['', 'gamecenter']))
+opts.Add(EnumVariable('plugin', 'Plugin to build', '', ['', 'gamecenter', 'inappstore']))
 
 # Local dependency paths, adapt them to your setup
 godot_headers_path = "godot-cpp/godot-headers/"
@@ -68,7 +68,11 @@ if env['platform'] == "osx":
     else:
         env.Append(CCFLAGS = ['-arch', env['arch']])
         env.Append(LINKFLAGS = ['-arch', env['arch']])
-    env.Append(LINKFLAGS = ['-framework', 'GameKit', '-framework', 'Cocoa'])
+    env.Append(LINKFLAGS = ['-framework', 'Cocoa'])
+    if env['plugin'] == 'inappstore':
+        env.Append(LINKFLAGS = ['-framework', 'StoreKit'])
+    elif env['plugin'] == 'gamecenter':
+        env.Append(LINKFLAGS = ['-framework', 'GameKit'])
     sdk_path = decode_utf8(subprocess.check_output(["xcrun", "--sdk", "macosx", "--show-sdk-path"]).strip())
     env.Append(CCFLAGS=["-isysroot", sdk_path])
     env.Append(LINKFLAGS=["-isysroot", sdk_path])

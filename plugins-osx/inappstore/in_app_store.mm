@@ -1,0 +1,459 @@
+/*************************************************************************/
+/*  in_app_store.mm                                                      */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2021 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2021 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
+#include "in_app_store.h"
+
+#import <Foundation/Foundation.h>
+#import <StoreKit/StoreKit.h>
+
+#if VERSION_MAJOR == 4
+typedef PackedStringArray GodotStringArray;
+typedef PackedFloat32Array GodotFloatArray;
+#else
+typedef PoolStringArray GodotStringArray;
+typedef PoolRealArray GodotFloatArray;
+#endif
+
+InAppStore *InAppStore::instance = NULL;
+
+@interface SKProduct (LocalizedPrice)
+
+@property(nonatomic, readonly) NSString *localizedPrice;
+
+@end
+
+//----------------------------------//
+// SKProduct extension
+//----------------------------------//
+@implementation SKProduct (LocalizedPrice)
+
+- (NSString *)localizedPrice {
+	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+	[numberFormatter setFormatterBehavior:NSNumberFormatterBehavior10_4];
+	[numberFormatter setNumberStyle:NSNumberFormatterCurrencyStyle];
+	[numberFormatter setLocale:self.priceLocale];
+	NSString *formattedString = [numberFormatter stringFromNumber:self.price];
+	return formattedString;
+}
+
+@end
+
+@interface GodotProductsDelegate : NSObject <SKProductsRequestDelegate>
+
+@property(nonatomic, strong) NSMutableArray *loadedProducts;
+@property(nonatomic, strong) NSMutableArray *pendingRequests;
+
+- (void)performRequestWithProductIDs:(NSSet *)productIDs;
+- (godot_error)purchaseProductWithProductID:(NSString *)productID;
+- (void)reset;
+
+@end
+
+@implementation GodotProductsDelegate
+
+- (instancetype)init {
+	self = [super init];
+
+	if (self) {
+		[self godot_commonInit];
+	}
+
+	return self;
+}
+
+- (void)godot_commonInit {
+	self.loadedProducts = [NSMutableArray new];
+	self.pendingRequests = [NSMutableArray new];
+}
+
+- (void)performRequestWithProductIDs:(NSSet *)productIDs {
+	SKProductsRequest *request = [[SKProductsRequest alloc] initWithProductIdentifiers:productIDs];
+
+	request.delegate = self;
+	[self.pendingRequests addObject:request];
+	[request start];
+}
+
+- (godot_error)purchaseProductWithProductID:(NSString *)productID {
+	SKProduct *product = nil;
+
+	NSLog(@"searching for product!");
+
+	if (self.loadedProducts) {
+		for (SKProduct *storedProduct in self.loadedProducts) {
+			if ([storedProduct.productIdentifier isEqualToString:productID]) {
+				product = storedProduct;
+				break;
+			}
+		}
+	}
+
+	if (!product) {
+		return GODOT_ERR_INVALID_PARAMETER;
+	}
+
+	NSLog(@"product found!");
+
+	SKPayment *payment = [SKPayment paymentWithProduct:product];
+	[[SKPaymentQueue defaultQueue] addPayment:payment];
+
+	NSLog(@"purchase sent!");
+
+	return GODOT_OK;
+}
+
+- (void)reset {
+	[self.loadedProducts removeAllObjects];
+	[self.pendingRequests removeAllObjects];
+}
+
+- (void)request:(SKRequest *)request didFailWithError:(NSError *)error {
+	[self.pendingRequests removeObject:request];
+
+	Dictionary ret;
+	ret["type"] = "product_info";
+	ret["result"] = "error";
+	ret["error"] = String([error.localizedDescription UTF8String]);
+
+	InAppStore::get_singleton()->_post_event(ret);
+}
+
+- (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response {
+	[self.pendingRequests removeObject:request];
+
+	NSArray *products = response.products;
+	[self.loadedProducts addObjectsFromArray:products];
+
+	Dictionary ret;
+	ret["type"] = "product_info";
+	ret["result"] = "ok";
+	GodotStringArray titles;
+	GodotStringArray descriptions;
+	GodotFloatArray prices;
+	GodotStringArray ids;
+	GodotStringArray localized_prices;
+	GodotStringArray currency_codes;
+
+	for (NSUInteger i = 0; i < [products count]; i++) {
+		SKProduct *product = [products objectAtIndex:i];
+
+		const char *str = [product.localizedTitle UTF8String];
+		titles.push_back(String(str != NULL ? str : ""));
+
+		str = [product.localizedDescription UTF8String];
+		descriptions.push_back(String(str != NULL ? str : ""));
+		prices.push_back([product.price doubleValue]);
+		ids.push_back(String([product.productIdentifier UTF8String]));
+		localized_prices.push_back(String([product.localizedPrice UTF8String]));
+		currency_codes.push_back(String([[[product priceLocale] objectForKey:NSLocaleCurrencyCode] UTF8String]));
+	}
+
+	ret["titles"] = titles;
+	ret["descriptions"] = descriptions;
+	ret["prices"] = prices;
+	ret["ids"] = ids;
+	ret["localized_prices"] = localized_prices;
+	ret["currency_codes"] = currency_codes;
+
+	GodotStringArray invalid_ids;
+
+	for (NSString *ipid in response.invalidProductIdentifiers) {
+		invalid_ids.push_back(String([ipid UTF8String]));
+	}
+
+	ret["invalid_ids"] = invalid_ids;
+
+	InAppStore::get_singleton()->_post_event(ret);
+}
+
+@end
+
+@interface GodotTransactionsObserver : NSObject <SKPaymentTransactionObserver>
+
+@property(nonatomic, assign) BOOL shouldAutoFinishTransactions;
+@property(nonatomic, strong) NSMutableDictionary *pendingTransactions;
+
+- (void)finishTransactionWithProductID:(NSString *)productID;
+- (void)reset;
+
+@end
+
+@implementation GodotTransactionsObserver
+
+- (instancetype)init {
+	self = [super init];
+
+	if (self) {
+		[self godot_commonInit];
+	}
+
+	return self;
+}
+
+- (void)godot_commonInit {
+	self.pendingTransactions = [NSMutableDictionary new];
+}
+
+- (void)finishTransactionWithProductID:(NSString *)productID {
+	SKPaymentTransaction *transaction = self.pendingTransactions[productID];
+
+	if (transaction) {
+		[[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+	}
+
+	self.pendingTransactions[productID] = nil;
+}
+
+- (void)reset {
+	[self.pendingTransactions removeAllObjects];
+}
+
+- (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions {
+	printf("transactions updated!\n");
+	for (SKPaymentTransaction *transaction in transactions) {
+
+		String pid;
+		Dictionary ret;
+
+		if (transaction.payment.productIdentifier.length > 0) {
+			pid = String([transaction.payment.productIdentifier UTF8String]);
+		} else {
+			pid = "";
+		}
+
+		ret["product_id"] = pid;
+		ret["type_code"] = (int)transaction.transactionState;
+
+		switch (transaction.transactionState) {
+			case SKPaymentTransactionStatePurchased: {
+				printf("status purchased!\n");
+
+				String transactionId = String([transaction.transactionIdentifier UTF8String]);
+				InAppStore::get_singleton()->_record_purchase(pid);
+
+				ret["type"] = "purchase";
+				ret["result"] = "ok";
+
+				ret["transaction_id"] = transactionId;
+
+				NSData *receipt = nil;
+                NSOperatingSystemVersion version = [[NSProcessInfo processInfo] operatingSystemVersion];
+                NSString *version_string = [NSString stringWithFormat:@"%ld.%ld.%ld", version.majorVersion, version.minorVersion, version.patchVersion];
+
+				NSBundle *bundle = [NSBundle mainBundle];
+				// Get the transaction receipt file path location in the app bundle.
+				NSURL *receiptFileURL = [bundle appStoreReceiptURL];
+
+				// Read in the contents of the transaction file.
+				receipt = [NSData dataWithContentsOfURL:receiptFileURL];
+
+				NSString *receipt_to_send = nil;
+
+				if (receipt != nil) {
+					receipt_to_send = [receipt base64EncodedStringWithOptions:0];
+				}
+				Dictionary receipt_ret;
+				receipt_ret["receipt"] = String(receipt_to_send != nil ? [receipt_to_send UTF8String] : "");
+				receipt_ret["sdk"] = String([version_string UTF8String]);
+				ret["receipt"] = receipt_ret;
+
+				if (self.shouldAutoFinishTransactions) {
+					[[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+				} else {
+					self.pendingTransactions[transaction.payment.productIdentifier] = transaction;
+				}
+			} break;
+			case SKPaymentTransactionStateFailed: {
+				printf("status transaction failed!\n");
+				ret["type"] = "purchase";
+				ret["result"] = "error";
+				ret["error"] = String([transaction.error.localizedDescription UTF8String]);
+				[[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+			} break;
+			case SKPaymentTransactionStateRestored: {
+				printf("status transaction restored!\n");
+				String transactionId = String([transaction.transactionIdentifier UTF8String]);
+				InAppStore::get_singleton()->_record_purchase(pid);
+				ret["type"] = "restore";
+				ret["result"] = "ok";
+				ret["transaction_id"] = transactionId;
+
+				NSData *receipt = nil;
+                NSOperatingSystemVersion version = [[NSProcessInfo processInfo] operatingSystemVersion];
+                NSString *version_string = [NSString stringWithFormat:@"%ld.%ld.%ld", version.majorVersion, version.minorVersion, version.patchVersion];
+
+				NSBundle *bundle = [NSBundle mainBundle];
+				// Get the transaction receipt file path location in the app bundle.
+				NSURL *receiptFileURL = [bundle appStoreReceiptURL];
+
+				// Read in the contents of the transaction file.
+				receipt = [NSData dataWithContentsOfURL:receiptFileURL];
+
+				NSString *receipt_to_send = nil;
+
+				if (receipt != nil) {
+					receipt_to_send = [receipt base64EncodedStringWithOptions:0];
+				}
+				Dictionary receipt_ret;
+				receipt_ret["receipt"] = String(receipt_to_send != nil ? [receipt_to_send UTF8String] : "");
+				receipt_ret["sdk"] = String([version_string UTF8String]);
+				ret["receipt"] = receipt_ret;
+				[[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+			} break;
+			case SKPaymentTransactionStatePurchasing: {
+				ret["type"] = "purchase";
+				ret["result"] = "progress";
+			} break;
+			case SKPaymentTransactionStateDeferred: {
+				ret["type"] = "purchase";
+				ret["result"] = "progress";
+			} break;
+			default: {
+				ret["type"] = "purchase";
+				ret["result"] = "unhandled";
+				printf("Transaction is unhandled. Transaction state: %i!\n", (int)transaction.transactionState);
+			} break;
+		}
+
+		InAppStore::get_singleton()->_post_event(ret);
+	}
+}
+
+@end
+
+void InAppStore::_register_methods() {
+	register_method("request_product_info", &InAppStore::request_product_info);
+	register_method("restore_purchases", &InAppStore::restore_purchases);
+	register_method("purchase", &InAppStore::purchase);
+
+	register_method("get_pending_event_count", &InAppStore::get_pending_event_count);
+	register_method("pop_pending_event", &InAppStore::pop_pending_event);
+	register_method("finish_transaction", &InAppStore::finish_transaction);
+	register_method("set_auto_finish_transaction", &InAppStore::set_auto_finish_transaction);
+}
+
+void InAppStore::_init() {
+}
+
+godot_error InAppStore::request_product_info(Dictionary p_params) {
+	ERR_FAIL_COND_V(!p_params.has("product_ids"), GODOT_ERR_INVALID_PARAMETER);
+
+	GodotStringArray pids = p_params["product_ids"];
+	printf("************ request product info! %i\n", pids.size());
+
+	NSMutableArray *array = [[NSMutableArray alloc] initWithCapacity:pids.size()];
+	for (int i = 0; i < pids.size(); i++) {
+		printf("******** adding %s to product list\n", pids[i].utf8().get_data());
+		NSString *pid = [[NSString alloc] initWithUTF8String:pids[i].utf8().get_data()];
+		[array addObject:pid];
+	}
+
+	NSSet *products = [[NSSet alloc] initWithArray:array];
+
+	[products_request_delegate performRequestWithProductIDs:products];
+
+	return GODOT_OK;
+}
+
+godot_error InAppStore::restore_purchases() {
+	printf("restoring purchases!\n");
+	[[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
+
+	return GODOT_OK;
+}
+
+godot_error InAppStore::purchase(Dictionary p_params) {
+	ERR_FAIL_COND_V(![SKPaymentQueue canMakePayments], GODOT_ERR_UNAVAILABLE);
+	if (![SKPaymentQueue canMakePayments]) {
+		return GODOT_ERR_UNAVAILABLE;
+	}
+
+	printf("purchasing!\n");
+	ERR_FAIL_COND_V(!p_params.has("product_id"), GODOT_ERR_INVALID_PARAMETER);
+
+	NSString *pid = [[NSString alloc] initWithUTF8String:String(p_params["product_id"]).utf8().get_data()];
+
+	return [products_request_delegate purchaseProductWithProductID:pid];
+}
+
+int InAppStore::get_pending_event_count() {
+	return pending_events.size();
+}
+
+Variant InAppStore::pop_pending_event() {
+	Variant front = pending_events.front();
+	pending_events.pop_front();
+
+	return front;
+}
+
+void InAppStore::_post_event(Variant p_event) {
+	pending_events.push_back(p_event);
+}
+
+void InAppStore::_record_purchase(String product_id) {
+	String skey = "purchased/" + product_id;
+	NSString *key = [[NSString alloc] initWithUTF8String:skey.utf8().get_data()];
+	[[NSUserDefaults standardUserDefaults] setBool:YES forKey:key];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+InAppStore *InAppStore::get_singleton() {
+	return instance;
+}
+
+InAppStore::InAppStore() {
+	ERR_FAIL_COND(instance != NULL);
+	instance = this;
+
+	products_request_delegate = [[GodotProductsDelegate alloc] init];
+	transactions_observer = [[GodotTransactionsObserver alloc] init];
+
+	[[SKPaymentQueue defaultQueue] addTransactionObserver:transactions_observer];
+}
+
+void InAppStore::finish_transaction(String product_id) {
+	NSString *prod_id = [NSString stringWithCString:product_id.utf8().get_data() encoding:NSUTF8StringEncoding];
+
+	[transactions_observer finishTransactionWithProductID:prod_id];
+}
+
+void InAppStore::set_auto_finish_transaction(bool b) {
+	transactions_observer.shouldAutoFinishTransactions = b;
+}
+
+InAppStore::~InAppStore() {
+	[products_request_delegate reset];
+	[transactions_observer reset];
+
+	products_request_delegate = nil;
+	[[SKPaymentQueue defaultQueue] removeTransactionObserver:transactions_observer];
+	transactions_observer = nil;
+}

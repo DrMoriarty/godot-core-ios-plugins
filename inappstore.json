@@ -2,11 +2,11 @@
   "name": "core.inappstore",
   "display_name": "AppStore",
   "description": "Apple AppStore plugin",
-  "version": "3.3.0",
+  "version": "3.3.2",
   "license": "MIT",
   "url": "https://github.com/godotengine/godot-ios-plugins",
   "category": "misc",
-  "godot_version": "3.3.0",
+  "godot_version": "3.3.2",
   "author": {
     "name": "Godot core team",
     "url": "https://godotengine.org"
@@ -16,6 +16,13 @@
       "bin/release/inappstore/inappstore.debug.xcframework": "ios/plugins/core.inappstore/inappstore.debug.xcframework",
       "bin/release/inappstore/inappstore.release.xcframework": "ios/plugins/core.inappstore/inappstore.release.xcframework",
       "bin/release/inappstore/inappstore.gdip": "ios/plugins/core.inappstore/"
+    }
+  },
+  "platform_osx": {
+    "files": {
+      "plugins-osx/bin/osx/libinappstore_universal.dylib": "addons/inappstore-osx/",
+      "plugins-osx/inappstore/inappstore.gdnlib": "addons/inappstore-osx/",
+      "plugins-osx/inappstore/inappstore.gdns": "addons/inappstore-osx/"
     }
   }
 }

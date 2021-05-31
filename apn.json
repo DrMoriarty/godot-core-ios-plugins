@@ -2,11 +2,11 @@
   "name": "core.apn",
   "display_name": "APN",
   "description": "Apple push notification plugin",
-  "version": "3.3.0",
+  "version": "3.3.2",
   "license": "MIT",
   "url": "https://github.com/godotengine/godot-ios-plugins",
   "category": "misc",
-  "godot_version": "3.3.0",
+  "godot_version": "3.3.2",
   "author": {
     "name": "Godot core team",
     "url": "https://godotengine.org"
