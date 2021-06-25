@@ -2,7 +2,7 @@
   "name": "core.icloud",
   "display_name": "iCloud",
   "description": "Apple iCloud plugin",
-  "version": "3.3.2",
+  "version": "3.3.2.1",
   "license": "MIT",
   "url": "https://github.com/godotengine/godot-ios-plugins",
   "category": "misc",
@@ -13,9 +13,16 @@
   },
   "platform_ios": {
     "files": {
-      "bin/release/icloud/icloud.debug.xcframework": "ios/plugins/core.icloud/icloud.debug.xcframework",
-      "bin/release/icloud/icloud.release.xcframework": "ios/plugins/core.icloud/icloud.release.xcframework",
-      "bin/release/icloud/icloud.gdip": "ios/plugins/core.icloud/"
+      "bin/ios_release/icloud/icloud.debug.xcframework": "ios/plugins/core.icloud/icloud.debug.xcframework",
+      "bin/ios_release/icloud/icloud.release.xcframework": "ios/plugins/core.icloud/icloud.release.xcframework",
+      "bin/ios_release/icloud/icloud.gdip": "ios/plugins/core.icloud/"
+    }
+  },
+  "platform_tvos": {
+    "files": {
+      "bin/tvos_release/icloud/icloud.debug.xcframework": "tvos/plugins/core.icloud/icloud.debug.xcframework",
+      "bin/tvos_release/icloud/icloud.release.xcframework": "tvos/plugins/core.icloud/icloud.release.xcframework",
+      "bin/tvos_release/icloud/icloud.gdatvp": "tvos/plugins/core.icloud/"
     }
   }
 }

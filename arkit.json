@@ -2,7 +2,7 @@
   "name": "core.arkit",
   "display_name": "ARKit",
   "description": "Apple Augmented Reality Kit",
-  "version": "3.3.2",
+  "version": "3.3.2.1",
   "license": "MIT",
   "url": "https://github.com/godotengine/godot-ios-plugins",
   "category": "misc",
@@ -13,9 +13,9 @@
   },
   "platform_ios": {
     "files": {
-      "bin/release/arkit/arkit.debug.xcframework": "ios/plugins/core.arkit/arkit.debug.xcframework",
-      "bin/release/arkit/arkit.release.xcframework": "ios/plugins/core.arkit/arkit.release.xcframework",
-      "bin/release/arkit/arkit.gdip": "ios/plugins/core.arkit/"
+      "bin/ios_release/arkit/arkit.debug.xcframework": "ios/plugins/core.arkit/arkit.debug.xcframework",
+      "bin/ios_release/arkit/arkit.release.xcframework": "ios/plugins/core.arkit/arkit.release.xcframework",
+      "bin/ios_release/arkit/arkit.gdip": "ios/plugins/core.arkit/"
     }
   }
 }

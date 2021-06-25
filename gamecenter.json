@@ -2,7 +2,7 @@
   "name": "core.gamecenter",
   "display_name": "GameCenter",
   "description": "Apple GameCenter plugin",
-  "version": "3.3.2",
+  "version": "3.3.2.1",
   "license": "MIT",
   "url": "https://github.com/godotengine/godot-ios-plugins",
   "category": "misc",
@@ -13,9 +13,16 @@
   },
   "platform_ios": {
     "files": {
-      "bin/release/gamecenter/gamecenter.debug.xcframework": "ios/plugins/core.gamecenter/gamecenter.debug.xcframework",
-      "bin/release/gamecenter/gamecenter.release.xcframework": "ios/plugins/core.gamecenter/gamecenter.release.xcframework",
-      "bin/release/gamecenter/gamecenter.gdip": "ios/plugins/core.gamecenter/"
+      "bin/ios_release/gamecenter/gamecenter.debug.xcframework": "ios/plugins/core.gamecenter/gamecenter.debug.xcframework",
+      "bin/ios_release/gamecenter/gamecenter.release.xcframework": "ios/plugins/core.gamecenter/gamecenter.release.xcframework",
+      "bin/ios_release/gamecenter/gamecenter.gdip": "ios/plugins/core.gamecenter/"
+    }
+  },
+  "platform_tvos": {
+    "files": {
+      "bin/tvos_release/gamecenter/gamecenter.debug.xcframework": "tvos/plugins/core.gamecenter/gamecenter.debug.xcframework",
+      "bin/tvos_release/gamecenter/gamecenter.release.xcframework": "tvos/plugins/core.gamecenter/gamecenter.release.xcframework",
+      "bin/tvos_release/gamecenter/gamecenter.gdatvp": "tvos/plugins/core.gamecenter/"
     }
   },
   "platform_osx": {

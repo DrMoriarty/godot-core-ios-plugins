@@ -2,7 +2,7 @@
   "name": "core.inappstore",
   "display_name": "AppStore",
   "description": "Apple AppStore plugin",
-  "version": "3.3.2",
+  "version": "3.3.2.1",
   "license": "MIT",
   "url": "https://github.com/godotengine/godot-ios-plugins",
   "category": "misc",
@@ -13,9 +13,16 @@
   },
   "platform_ios": {
     "files": {
-      "bin/release/inappstore/inappstore.debug.xcframework": "ios/plugins/core.inappstore/inappstore.debug.xcframework",
-      "bin/release/inappstore/inappstore.release.xcframework": "ios/plugins/core.inappstore/inappstore.release.xcframework",
-      "bin/release/inappstore/inappstore.gdip": "ios/plugins/core.inappstore/"
+      "bin/ios_release/inappstore/inappstore.debug.xcframework": "ios/plugins/core.inappstore/inappstore.debug.xcframework",
+      "bin/ios_release/inappstore/inappstore.release.xcframework": "ios/plugins/core.inappstore/inappstore.release.xcframework",
+      "bin/ios_release/inappstore/inappstore.gdip": "ios/plugins/core.inappstore/"
+    }
+  },
+  "platform_tvos": {
+    "files": {
+      "bin/tvos_release/inappstore/inappstore.debug.xcframework": "tvos/plugins/core.inappstore/inappstore.debug.xcframework",
+      "bin/tvos_release/inappstore/inappstore.release.xcframework": "tvos/plugins/core.inappstore/inappstore.release.xcframework",
+      "bin/tvos_release/inappstore/inappstore.gdatvp": "tvos/plugins/core.inappstore/"
     }
   },
   "platform_osx": {

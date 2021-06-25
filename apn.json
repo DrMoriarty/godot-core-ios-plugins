@@ -2,7 +2,7 @@
   "name": "core.apn",
   "display_name": "APN",
   "description": "Apple push notification plugin",
-  "version": "3.3.2",
+  "version": "3.3.2.1",
   "license": "MIT",
   "url": "https://github.com/godotengine/godot-ios-plugins",
   "category": "misc",
@@ -13,9 +13,16 @@
   },
   "platform_ios": {
     "files": {
-      "bin/release/apn/apn.debug.xcframework": "ios/plugins/core.apn/apn.debug.xcframework",
-      "bin/release/apn/apn.release.xcframework": "ios/plugins/core.apn/apn.release.xcframework",
-      "bin/release/apn/apn.gdip": "ios/plugins/core.apn/"
+      "bin/ios_release/apn/apn.debug.xcframework": "ios/plugins/core.apn/apn.debug.xcframework",
+      "bin/ios_release/apn/apn.release.xcframework": "ios/plugins/core.apn/apn.release.xcframework",
+      "bin/ios_release/apn/apn.gdip": "ios/plugins/core.apn/"
+    }
+  },
+  "platform_tvos": {
+    "files": {
+      "bin/tvos_release/apn/apn.debug.xcframework": "tvos/plugins/core.apn/apn.debug.xcframework",
+      "bin/tvos_release/apn/apn.release.xcframework": "tvos/plugins/core.apn/apn.release.xcframework",
+      "bin/tvos_release/apn/apn.gdatvp": "tvos/plugins/core.apn/"
     }
   }
 }

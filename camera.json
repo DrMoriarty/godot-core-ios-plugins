@@ -2,7 +2,7 @@
   "name": "core.camera",
   "display_name": "Camera",
   "description": "iPhone camera",
-  "version": "3.3.2",
+  "version": "3.3.2.1",
   "license": "MIT",
   "url": "https://github.com/godotengine/godot-ios-plugins",
   "category": "misc",
@@ -13,9 +13,9 @@
   },
   "platform_ios": {
     "files": {
-      "bin/release/camera/camera.debug.xcframework": "ios/plugins/core.camera/camera.debug.xcframework",
-      "bin/release/camera/camera.release.xcframework": "ios/plugins/core.camera/camera.release.xcframework",
-      "bin/release/camera/camera.gdip": "ios/plugins/core.camera/"
+      "bin/ios_release/camera/camera.debug.xcframework": "ios/plugins/core.camera/camera.debug.xcframework",
+      "bin/ios_release/camera/camera.release.xcframework": "ios/plugins/core.camera/camera.release.xcframework",
+      "bin/ios_release/camera/camera.gdip": "ios/plugins/core.camera/"
     }
   }
 }
