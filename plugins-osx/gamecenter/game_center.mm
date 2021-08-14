@@ -75,18 +75,28 @@ godot_error GameCenter::authenticate() {
 	GKLocalPlayer *player = [GKLocalPlayer localPlayer];
 	ERR_FAIL_COND_V(![player respondsToSelector:@selector(authenticateHandler)], GODOT_ERR_UNAVAILABLE);
 
-	GKDialogController *dialog = [[GKDialogController alloc] init];
-	ERR_FAIL_COND_V(!dialog, GODOT_FAILED);
+	//GKDialogController *dialog = [[GKDialogController alloc] init];
+	//ERR_FAIL_COND_V(!dialog, GODOT_FAILED);
+
+	player.authenticateHandler = ^(NSViewController *controller, NSError *error) {
+        printf("Auth handler called!\n");
+    };
 
 	// This handler is called several times.  First when the view needs to be shown, then again
 	// after the view is cancelled or the user logs in.	 Or if the user's already logged in, it's
 	// called just once to confirm they're authenticated.  This is why no result needs to be specified
 	// in the presentViewController phase. In this case, more calls to this function will follow.
-	player.authenticateHandler = (^(NSViewController *controller, NSError *error) {
+    /*
+	player.authenticateHandler = ^(NSViewController *controller, NSError *error) {
 
 		if (controller) {
-			[dialog presentViewController:controller];
+            WARN_PRINT("Start GC authentification");
+			Dictionary ret;
+			ret["type"] = "authentication_start";
+			pending_events.push_back(ret);
+			//[dialog presentViewController:controller];
 		} else {
+            WARN_PRINT("Finish GC authentification");
 			Dictionary ret;
 			ret["type"] = "authentication";
 			if (player.isAuthenticated) {
@@ -104,13 +114,17 @@ godot_error GameCenter::authenticate() {
 
 			pending_events.push_back(ret);
 		};
-	});
+	};
+    */
+    godot::Godot::print("GC AUTH");
 
 	return GODOT_OK;
 };
 
 bool GameCenter::is_authenticated() {
-	return authenticated;
+	GKLocalPlayer *player = [GKLocalPlayer localPlayer];
+    return player.isAuthenticated;
+	//return authenticated;
 };
 
 godot_error GameCenter::post_score(Dictionary p_score) {
